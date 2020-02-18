@@ -1,0 +1,1 @@
+insert into bank_client (name, password, money) values ("lol", "kekekeke", 322);
