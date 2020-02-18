@@ -1,9 +1,12 @@
 package dao;
 
 import com.sun.deploy.util.SessionState;
+import com.sun.istack.internal.NotNull;
 import model.BankClient;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class BankClientDAO {
@@ -14,9 +17,26 @@ public class BankClientDAO {
         this.connection = connection;
     }
 
-    public List<BankClient> getAllBankClient() {
-        return null;
-    }
+//    public @NotNull
+//    List<BankClient> getAllBankClient() throws SQLException {
+//
+//        try (Statement stmt = connection.createStatement();
+//             ResultSet result = stmt.executeQuery("SELECT * FROM bank_client")
+//        ) {
+//            List<BankClient> clientsList = new ArrayList<>();
+//
+//            while (result.next()) {
+//                BankClient client = new BankClient(
+//                        result.getLong("id"),
+//                        result.getString("name"),
+//                        result.getString("password"),
+//                        result.getLong("money")
+//                );
+//                clientsList.add(client);
+//            }
+//            return (clientsList.isEmpty()) ? Collections.emptyList() : clientsList;
+//        }
+//    }
 
     public boolean validateClient(String name, String password) {
         return false;
@@ -30,9 +50,11 @@ public class BankClientDAO {
         return null;
     }
 
-    public boolean isClientHasSum(String name, Long expectedSum) {
-        return false;
-    }
+//    public boolean isClientHasSum(final String name, final long expectedSum) throws SQLException {
+//        BankClient client = getClientByName(name);
+//        return (client != null) && (client.getMoney() >= expectedSum);
+//    }
+
 
     public long getClientIdByName(String name) throws SQLException {
         Statement stmt = connection.createStatement();

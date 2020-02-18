@@ -21,18 +21,22 @@ public class BankClientService {
         }
     }
 
-    public BankClient getClientByName(String name) {
-
-        return null;
-    }
+    public BankClient getClientByName(String name) throws DBException {     // не проверен
+        return getBankClientDAO().getClientByName(name);                   //
+    }                                                                     //
 
     public List<BankClient> getAllClient() {
         return  null;
     }
 
-    public boolean deleteClient(String name) {
-        return false;
-    }
+//    public boolean deleteClient(String name) throws DBException {
+//        if (getClientByName(name) != null) {
+//            try (PreparedStatement stmt = connection.prepareStatement("DELETE FROM bank_client WHERE name='?'")) {
+//                stmt.setString(1, name);
+//                return false;
+//            }
+//        }
+//    }
 
     public boolean addClient(BankClient client) throws DBException, SQLException {
         BankClientDAO dao = getBankClientDAO();
@@ -91,3 +95,17 @@ public class BankClientService {
         return new BankClientDAO(getMysqlConnection());
     }
 }
+    public void deleteClient(final String name) throws SQLException {
+        int updatedRows = 0;
+
+        if ((name) != null) {
+            try (PreparedStatement stmt = connection.prepareStatement("DELETE FROM bank_client WHERE name='?'")) {
+                stmt.setString(1, name);
+                updatedRows = stmt.executeUpdate();
+            }
+        }
+        if (updatedRows != 1) {
+            // Если изменена не 1 строка в таблице, то что-то пошло не так.
+            throw new IllegalStateException("Error while deleting client!");
+        }
+    }
