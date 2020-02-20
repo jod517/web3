@@ -21,12 +21,12 @@ public class BankClientService {
         }
     }
 
-    public BankClient getClientByName(String name) throws DBException {     // не проверен
-        return getBankClientDAO().getClientByName(name);                   //
-    }                                                                     //
+    public BankClient getClientByName(String name) {
+        return null;
+    }                                                            //
 
     public List<BankClient> getAllClient() {
-        return  null;
+        return null;
     }
 
 //    public boolean deleteClient(String name) throws DBException {
@@ -41,7 +41,7 @@ public class BankClientService {
     public boolean addClient(BankClient client) throws DBException, SQLException {
         BankClientDAO dao = getBankClientDAO();
         dao.addClient(client);
-            return true;
+        return true;
     }
 
 
@@ -57,7 +57,8 @@ public class BankClientService {
             throw new DBException(e);
         }
     }
-    public void createTable() throws DBException{
+
+    public void createTable() throws DBException {
         BankClientDAO dao = getBankClientDAO();
         try {
             dao.createTable();
@@ -95,17 +96,18 @@ public class BankClientService {
         return new BankClientDAO(getMysqlConnection());
     }
 }
-    public void deleteClient(final String name) throws SQLException {
-        int updatedRows = 0;
 
-        if ((name) != null) {
-            try (PreparedStatement stmt = connection.prepareStatement("DELETE FROM bank_client WHERE name='?'")) {
-                stmt.setString(1, name);
-                updatedRows = stmt.executeUpdate();
-            }
-        }
-        if (updatedRows != 1) {
-            // Если изменена не 1 строка в таблице, то что-то пошло не так.
-            throw new IllegalStateException("Error while deleting client!");
-        }
-    }
+//    public void deleteClient(final String name) throws SQLException {
+//        int updatedRows = 0;
+//
+//        if ((name) != null) {
+//            try (PreparedStatement stmt = connection.prepareStatement("DELETE FROM bank_client WHERE name='?'")) {
+//                stmt.setString(1, name);
+//                updatedRows = stmt.executeUpdate();
+//            }
+//        }
+//        if (updatedRows != 1) {
+//            // Если изменена не 1 строка в таблице, то что-то пошло не так.
+//            throw new IllegalStateException("Error while deleting client!");
+//        }
+//    }
