@@ -45,8 +45,19 @@ public class BankClientService {
     }
 
 
-    public boolean sendMoneyToClient(BankClient sender, String name, Long value) {
-        return false;
+    public boolean sendMoneyToClient(BankClient sender, String name, Long value) throws DBException, SQLException {
+        BankClient recipient = getClientByName(name);
+        BankClientDAO dao = getBankClientDAO();
+        if (sender == null || recipient == null || value <= 0) {
+            return false;
+        }
+        if (dao.validateClient(sender.getName(), sender.getPassword()) && dao.isClientHasSum(sender.getName(), value)) {
+            dao.updateClientsMoney(sender.getName(), sender.getPassword(), -value);
+            dao.updateClientsMoney(name, recipient.getPassword(), value);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void cleanUp() throws DBException {

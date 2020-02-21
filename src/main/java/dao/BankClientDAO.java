@@ -72,12 +72,36 @@ public class BankClientDAO {
         return client != null;
     }
 
-    public void updateClientsMoney(String name, String password, Long transactValue) {
+    public void updateClientsMoney(
+            final String name,
+            final String password,
+            final long transactValue
+    )
+            throws SQLException {
 
+        int updatedRows = 0;
+
+        if (validateClient(name, password)) {
+
+            BankClient client = getClientByName(name);
+            long finalAmount = client.getMoney() + transactValue;
+
+            if (finalAmount >= 0) {
+                try (PreparedStatement stmt = connection.prepareStatement(
+                        "UPDATE bank_client SET money=? WHERE id=?")
+                ) {
+                    stmt.setLong(1, finalAmount);
+                    stmt.setLong(2, client.getId());
+                    updatedRows = stmt.executeUpdate();
+                }
+            }
+        }
     }
 
-    public BankClient getClientById(long id) throws SQLException {
-        return null;
+
+    public @Nullable
+    BankClient getClientById(final Long id) throws SQLException {
+        return getClientBySqlQuery("SELECT * FROM bank_client WHERE id=?", id.toString());
     }
 
   public boolean isClientHasSum(final String name, final long expectedSum) throws SQLException {
@@ -97,8 +121,9 @@ public class BankClientDAO {
         return id;
     }
 
-    public BankClient getClientByName(String name) {
-        return null;
+    public @Nullable
+    BankClient getClientByName(final String name) throws SQLException {
+        return getClientBySqlQuery("SELECT * FROM bank_client WHERE name=?", name);
     }
 
     public void addClient(BankClient client) throws SQLException {
