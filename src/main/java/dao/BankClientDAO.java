@@ -152,4 +152,18 @@ public class BankClientDAO {
         stmt.executeUpdate("DROP TABLE IF EXISTS bank_client");
         stmt.close();
     }
+
+
+    public void deleteClient(final String name) throws SQLException {
+        int updatedRows = 0;
+        if (getClientByName(name) != null) {
+            try (PreparedStatement stmt = connection.prepareStatement("DELETE FROM bank_client WHERE name='?'")) {
+                stmt.setString(1, name);
+                updatedRows = stmt.executeUpdate();
+            }
+        }
+        if (updatedRows != 1) {
+            throw new IllegalStateException("Error");
+        }
+    }
 }

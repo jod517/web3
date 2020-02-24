@@ -25,23 +25,27 @@ public class MoneyTransactionServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String senderName = req.getParameter("senderName").trim();
-        String senderPass = req.getParameter("senderPass");
+        String senderName = req.getParameter("SenderName");
+        String senderPass = req.getParameter("SenderPass");
         long count = Long.parseLong(req.getParameter("count"));
-        String nameTo = req.getParameter("nameTo").trim();
+        String nameTo = req.getParameter("nameTo");
 
         BankClientService bankClientService = new BankClientService();
-        BankClient sender = bankClientService.getClientByName(senderName);
-
-        boolean result = false;
-        if (sender != null && sender.getPassword().equals(senderPass)) {
-            try {
-                result = bankClientService.sendMoneyToClient(sender, nameTo, count);
-            } catch (DBException e) {
-                e.printStackTrace();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+        BankClient sender = null;
+        try {
+            sender = bankClientService.getClientByName(senderName);
+        } catch (DBException e) {
+            e.printStackTrace();
         }
+
+        try {
+            bankClientService.sendMoneyToClient(sender, nameTo, count);
+        } catch (DBException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
-}
+    }
+

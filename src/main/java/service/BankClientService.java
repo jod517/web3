@@ -1,5 +1,6 @@
 package service;
 
+import com.sun.istack.internal.Nullable;
 import dao.BankClientDAO;
 import exception.DBException;
 import model.BankClient;
@@ -21,22 +22,27 @@ public class BankClientService {
         }
     }
 
-    public BankClient getClientByName(String name) {
-        return null;
-    }                                                            //
-
+    public BankClient getClientByName(String name) throws DBException {
+        BankClientDAO dao = getBankClientDAO();
+        try  {
+            return dao.getClientByName(name);
+        } catch (SQLException e) {
+            throw new DBException(e);
+        }
+    }
     public List<BankClient> getAllClient() {
         return null;
     }
-
-//    public boolean deleteClient(String name) throws DBException {
-//        if (getClientByName(name) != null) {
-//            try (PreparedStatement stmt = connection.prepareStatement("DELETE FROM bank_client WHERE name='?'")) {
-//                stmt.setString(1, name);
-//                return false;
-//            }
+//    public List<BankClient> getAllClient() {
+//        BankClientDAO dao = getBankClientDAO();
+//        try {
+//            return dao.getAllBankClient();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
 //        }
 //    }
+
+
 
     public boolean addClient(BankClient client) throws DBException, SQLException {
         BankClientDAO dao = getBankClientDAO();
@@ -106,19 +112,16 @@ public class BankClientService {
     private static BankClientDAO getBankClientDAO() {
         return new BankClientDAO(getMysqlConnection());
     }
-}
-
-//    public void deleteClient(final String name) throws SQLException {
-//        int updatedRows = 0;
-//
-//        if ((name) != null) {
-//            try (PreparedStatement stmt = connection.prepareStatement("DELETE FROM bank_client WHERE name='?'")) {
-//                stmt.setString(1, name);
-//                updatedRows = stmt.executeUpdate();
-//            }
+//    public boolean deleteClient(String name) {
+//        if (getClientByName(name) == null) {
+//            retur n false;
 //        }
-//        if (updatedRows != 1) {
-//            // Если изменена не 1 строка в таблице, то что-то пошло не так.
-//            throw new IllegalStateException("Error while deleting client!");
+//        try (BankClientDAO dao = getBankClientDAO()) {
+//            dao.deleteClient(name);
+//            return true;
+//        } catch (IllegalStateException | SQLException e) {
+//            throw new DBException(e);
 //        }
 //    }
+}
+
