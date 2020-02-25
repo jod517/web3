@@ -1,5 +1,6 @@
 package service;
 
+import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 import dao.BankClientDAO;
 import exception.DBException;
@@ -22,25 +23,24 @@ public class BankClientService {
         }
     }
 
-    public BankClient getClientByName(String name) throws DBException {
-        BankClientDAO dao = getBankClientDAO();
+    public @Nullable
+    BankClient getClientByName(String name) throws DBException {
         try  {
+            BankClientDAO dao = getBankClientDAO();
             return dao.getClientByName(name);
         } catch (SQLException e) {
             throw new DBException(e);
         }
     }
-    public List<BankClient> getAllClient() {
-        return null;
+    public @NotNull
+    List<BankClient> getAllClient() throws DBException {
+        try  {
+            BankClientDAO dao = getBankClientDAO();
+            return dao.getAllBankClient();
+        } catch (SQLException e) {
+            throw new DBException(e);
+        }
     }
-//    public List<BankClient> getAllClient() {
-//        BankClientDAO dao = getBankClientDAO();
-//        try {
-//            return dao.getAllBankClient();
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
 
 

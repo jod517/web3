@@ -110,15 +110,10 @@ public class BankClientDAO {
    }
 
 
-    public long getClientIdByName(String name) throws SQLException {
-        Statement stmt = connection.createStatement();
-        stmt.execute("select * from bank_clien where name='" + name + "'");
-        ResultSet result = stmt.getResultSet();
-        result.next();
-        Long id = result.getLong(1);
-        result.close();
-        stmt.close();
-        return id;
+    public @Nullable
+    Long getClientIdByName(final String name) throws SQLException {
+        BankClient client = getClientByName(name);
+        return (client != null) ? client.getId() : null;
     }
 
     public @Nullable
