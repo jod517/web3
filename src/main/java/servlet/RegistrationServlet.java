@@ -16,6 +16,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.Map;
+
 @WebServlet("/registration")
 public class RegistrationServlet extends HttpServlet {
     @Override
@@ -25,7 +27,6 @@ public class RegistrationServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-       // PrintWriter writer = resp.getWriter();
 
         String name = req.getParameter("name");
         String password = req.getParameter("password");
@@ -34,12 +35,23 @@ public class RegistrationServlet extends HttpServlet {
         BankClient newClient = new BankClient(name, password, money);
 
         BankClientService bankClientService = new BankClientService();
+        boolean result = false;
         try {
-            bankClientService.addClient(newClient);
-        }catch (DBException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
+            result = bankClientService.addClient(newClient);
+        } catch (DBException e) {
             e.printStackTrace();
         }
+
+        String resultString = result ? "Add client successful" : "Client not add";
+
+        /* формируем response */
+        Map<String, Object> pageVariables = new HashMap<>();
+        pageVariables.put("message", resultString);
+        resp.getWriter().println(
+                PageGenerator
+                        .getInstance()
+                        .getPage("resultPage.html", pageVariables)
+        );
+        resp.setStatus(HttpServletResponse.SC_OK);
     }
-}
+    }

@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Map;
+
 @WebServlet("/transaction")
 public class MoneyTransactionServlet extends HttpServlet {
 
@@ -32,20 +34,32 @@ public class MoneyTransactionServlet extends HttpServlet {
 
         BankClientService bankClientService = new BankClientService();
         BankClient sender = null;
-        try {
-            sender = bankClientService.getClientByName(senderName);
-        } catch (DBException e) {
-            e.printStackTrace();
+        sender = bankClientService.getClientByName(senderName);
+
+        boolean result = false;
+        if (sender != null && sender.getPassword().equals(senderPass)) {
+            try {
+                result = bankClientService.sendMoneyToClient(sender, nameTo, count);
+            } catch (DBException e) {
+                e.printStackTrace();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
-        try {
-            bankClientService.sendMoneyToClient(sender, nameTo, count);
-        } catch (DBException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        String resultString = result
+                ? "The transaction was successful"
+                : "transaction rejected";
 
+        /* формируем response */
+        Map<String, Object> pageVariables = new HashMap<>();
+        pageVariables.put("message", resultString);
+        resp.getWriter().println(
+                PageGenerator
+                        .getInstance()
+                        .getPage("resultPage.html", pageVariables)
+        );
+        resp.setStatus(HttpServletResponse.SC_OK);
     }
     }
 

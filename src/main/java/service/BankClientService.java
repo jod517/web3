@@ -24,30 +24,38 @@ public class BankClientService {
     }
 
     public @Nullable
-    BankClient getClientByName(String name) throws DBException {
+    BankClient getClientByName(String name)  {
         try  {
             BankClientDAO dao = getBankClientDAO();
             return dao.getClientByName(name);
         } catch (SQLException e) {
-            throw new DBException(e);
+            throw new RuntimeException(e);
         }
     }
     public @NotNull
-    List<BankClient> getAllClient() throws DBException {
+    List<BankClient> getAllClient() {
         try  {
             BankClientDAO dao = getBankClientDAO();
             return dao.getAllBankClient();
-        } catch (SQLException e) {
-            throw new DBException(e);
+        } catch (SQLException e){
+            throw new RuntimeException(e);
         }
+
     }
 
 
 
-    public boolean addClient(BankClient client) throws DBException, SQLException {
-        BankClientDAO dao = getBankClientDAO();
-        dao.addClient(client);
-        return true;
+    public boolean addClient(BankClient client) throws DBException {
+        if (getClientByName(client.getName()) != null) {
+            return false;
+        }
+        try  {
+            BankClientDAO dao = getBankClientDAO();
+            dao.addClient(client);
+            return true;
+        } catch (SQLException | IllegalStateException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

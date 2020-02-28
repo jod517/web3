@@ -96,6 +96,9 @@ public class BankClientDAO {
                 }
             }
         }
+        if (updatedRows != 1) {
+            throw new IllegalStateException("Error");
+        }
     }
 
 
@@ -123,13 +126,18 @@ public class BankClientDAO {
 
     public void addClient(BankClient client) throws SQLException {
         int updatesCount = 0;
-        try (PreparedStatement stmt = connection.prepareStatement(
-                "INSERT INTO bank_client (name, password, money) values (?, ?, ?)")
-        ) {
-            stmt.setString(1, client.getName());
-            stmt.setString(2, client.getPassword());
-            stmt.setLong(3, client.getMoney());
-            updatesCount = stmt.executeUpdate();
+        if (getClientByName(client.getName()) == null) {
+            try (PreparedStatement stmt = connection.prepareStatement(
+                    "INSERT INTO bank_client (name, password, money) values (?, ?, ?)")
+            ) {
+                stmt.setString(1, client.getName());
+                stmt.setString(2, client.getPassword());
+                stmt.setLong(3, client.getMoney());
+                updatesCount = stmt.executeUpdate();
+            }
+        }
+        if (updatesCount != 1) {
+            throw new IllegalStateException("Error while adding client!");
         }
     }
 
