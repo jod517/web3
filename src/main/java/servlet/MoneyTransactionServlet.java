@@ -27,39 +27,33 @@ public class MoneyTransactionServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String senderName = req.getParameter("SenderName");
-        String senderPass = req.getParameter("SenderPass");
-        long count = Long.parseLong(req.getParameter("count"));
+        Map<String, Object> pageVariables = new HashMap<>();
+        String senderName = req.getParameter("senderName");
+        String senderPass = req.getParameter("senderPass");
         String nameTo = req.getParameter("nameTo");
+        Long count = Long.parseLong(req.getParameter("count"));
+        try {
 
-        BankClientService bankClientService = new BankClientService();
-        BankClient sender = null;
-        sender = bankClientService.getClientByName(senderName);
-
-        boolean result = false;
-        if (sender != null && sender.getPassword().equals(senderPass)) {
-            try {
-                result = bankClientService.sendMoneyToClient(sender, nameTo, count);
-            } catch (DBException e) {
-                e.printStackTrace();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            BankClient sender = bankClientService.getClientByName(senderName);
+            if (sender.getPassword().equals(senderPass)) {
+                if (bankClientService.sendMoneyToClient(sender, nameTo, count)) {
+                    pageVariables.put("message", "The transaction was successful");
+                } else {
+                    pageVariables.put("message", "transaction rejected");
+                }
+            } else {
+                pageVariables.put("message", "transaction rejected");
             }
+        } catch (DBException e) {
+            pageVariables.put("message", "transaction rejected");
+        } catch (SQLException e) {
+            pageVariables.put("message", "transaction rejected");
         }
 
-        String resultString = result
-                ? "The transaction was successful"
-                : "transaction rejected";
 
-        /* формируем response */
-        Map<String, Object> pageVariables = new HashMap<>();
-        pageVariables.put("message", resultString);
-        resp.getWriter().println(
-                PageGenerator
-                        .getInstance()
-                        .getPage("resultPage.html", pageVariables)
-        );
+        resp.getWriter().println(PageGenerator.getInstance().getPage("resultPage.html", pageVariables));
+        resp.setContentType("text/html;charset=utf-8");
         resp.setStatus(HttpServletResponse.SC_OK);
-    }
-    }
 
+    }
+}

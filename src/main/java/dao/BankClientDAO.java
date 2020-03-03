@@ -62,43 +62,23 @@ public class BankClientDAO {
         }
     }
 
-    public boolean validateClient(final String name, final String password)
-            throws SQLException {
-        BankClient client = getClientBySqlQuery(
-                "SELECT * FROM bank_client WHERE name=? AND password=?",
-                name,
-                password
-        );
-        return client != null;
+    public boolean validateClient(String name, String password) throws SQLException {
+        String nameFromBase = getClientByName(name).getName();
+        String passwordFromBase = getClientByName(name).getPassword();
+        return passwordFromBase.equals(password) && nameFromBase.equals(name);
     }
 
-    public void updateClientsMoney(
-            final String name,
-            final String password,
-            final long transactValue
-    )
-            throws SQLException {
-
-        int updatedRows = 0;
-
+    public void updateClientsMoney(String name, String password, Long transactValue) throws SQLException {
         if (validateClient(name, password)) {
-
-            BankClient client = getClientByName(name);
-            long finalAmount = client.getMoney() + transactValue;
-
-            if (finalAmount >= 0) {
-                try (PreparedStatement stmt = connection.prepareStatement(
-                        "UPDATE bank_client SET money=? WHERE id=?")
-                ) {
-                    stmt.setLong(1, finalAmount);
-                    stmt.setLong(2, client.getId());
-                    updatedRows = stmt.executeUpdate();
-                }
-            }
+            BankClient client=getClientByName(name);
+            Long money=client.getMoney()+transactValue;
+            String zap = "update bank_client SET money=? where name=?";
+            PreparedStatement stmt = connection.prepareStatement(zap);
+            stmt.setLong(1, money);
+            stmt.setString(2, name);
+            stmt.executeUpdate();
         }
-        if (updatedRows != 1) {
-            throw new IllegalStateException("Error");
-        }
+
     }
 
 

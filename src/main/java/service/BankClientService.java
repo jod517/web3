@@ -60,18 +60,17 @@ public class BankClientService {
 
 
     public boolean sendMoneyToClient(BankClient sender, String name, Long value) throws DBException, SQLException {
-        BankClient recipient = getClientByName(name);
-        BankClientDAO dao = getBankClientDAO();
-        if (sender == null || recipient == null || value <= 0) {
-            return false;
+        try {
+            BankClient recipient = getClientByName(name);
+            if (getBankClientDAO().isClientHasSum(sender.getName(), value)){
+                getBankClientDAO().updateClientsMoney(sender.getName(), sender.getPassword(), -value);
+                getBankClientDAO().updateClientsMoney(name, recipient.getPassword(), value);
+                return true;
+            }
+        } catch (SQLException | IllegalStateException e) {
+            throw new RuntimeException(e);
         }
-        if (dao.validateClient(sender.getName(), sender.getPassword()) && dao.isClientHasSum(sender.getName(), value)) {
-            dao.updateClientsMoney(sender.getName(), sender.getPassword(), -value);
-            dao.updateClientsMoney(name, recipient.getPassword(), value);
-            return true;
-        } else {
-            return false;
-        }
+        return false;
     }
 
     public void cleanUp() throws DBException {
@@ -120,16 +119,6 @@ public class BankClientService {
     private static BankClientDAO getBankClientDAO() {
         return new BankClientDAO(getMysqlConnection());
     }
-//    public boolean deleteClient(String name) {
-//        if (getClientByName(name) == null) {
-//            retur n false;
-//        }
-//        try (BankClientDAO dao = getBankClientDAO()) {
-//            dao.deleteClient(name);
-//            return true;
-//        } catch (IllegalStateException | SQLException e) {
-//            throw new DBException(e);
-//        }
-//    }
+
 }
 

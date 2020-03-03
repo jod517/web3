@@ -44,7 +44,6 @@ public class RegistrationServlet extends HttpServlet {
 
         String resultString = result ? "Add client successful" : "Client not add";
 
-        /* формируем response */
         Map<String, Object> pageVariables = new HashMap<>();
         pageVariables.put("message", resultString);
         resp.getWriter().println(
